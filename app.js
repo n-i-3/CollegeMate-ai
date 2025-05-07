@@ -2,30 +2,37 @@ const express = require('express');
 const app = express();
 const axios = require('axios');
 require('dotenv').config();
+const placesRoute = require('./routes/places');
 const port = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use('/places', placesRoute);
+
 
 app.set('view engine', 'ejs');
 
+let chatHistory = [
+    { role: 'system', content: 'You are CollegeMate-ai, a helpful AI that assists with college-related queries, coding, and advice.' }
+];
+
 app.get('/', (req, res) => {
-    res.render('index');  // Make sure views/index.ejs exists
+    res.render('index');  
 });
 
 app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
 
+    chatHistory.push({ role: 'user', content: userMessage });
+
     try {
         const response = await axios.post('https://api.mistral.ai/v1/chat/completions', {
             model: 'mistral-small-latest',
-            messages: [
-                { role: 'user', content: userMessage }
-            ],
-            temperature: 1.5,
+            messages: chatHistory, 
+            temperature: 0.8,  
             top_p: 1,
-            max_tokens: 150
+            max_tokens: 300
         }, {
             headers: {
                 'Authorization': `Bearer ${process.env.MISTRAL_API_KEY}`,
@@ -34,6 +41,9 @@ app.post('/chat', async (req, res) => {
         });
 
         const botReply = response.data.choices?.[0]?.message?.content || "No response from AI.";
+
+        chatHistory.push({ role: 'assistant', content: botReply });
+
         res.json({ reply: botReply });
 
     } catch (error) {
@@ -42,6 +52,19 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+// Optional: clear memory (for testing)
+app.post('/reset', (req, res) => {
+    chatHistory = [
+        { role: 'system', content: 'You are CollegeMate-ai, a helpful AI that assists with college-related queries, coding, and advice.' }
+    ];
+    res.json({ status: 'Chat history reset.' });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+app.get('/nearby', (req, res) => {
+    res.render('nearby');
+  });
+  

@@ -27,7 +27,6 @@
       flex-direction: column;
       min-height: 100vh;
       align-items: center;
-      justify-content: flex-start;
     }
 
     body.dark {
@@ -50,17 +49,18 @@
 
     /* Chat Box */
     #chat-box {
-      flex-grow: 1;
+      flex: 1;
       max-width: 600px;
       width: 100%;
-      margin: auto;
-      height: calc(100vh - 180px);
+      margin: 20px auto;
       overflow-y: auto;
       background: white;
       border-radius: 12px;
       padding: 1rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      padding-bottom: 100px; /* new: leave space for input box */
+      display: flex;
+      flex-direction: column;
     }
 
     body.dark #chat-box {
@@ -75,6 +75,10 @@
       max-width: 80%;
       white-space: pre-wrap;
       line-height: 1.4;
+      width: fit-content;
+      word-break: break-word;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
     }
 
     .user {
@@ -98,15 +102,18 @@
     }
 
     #chat-form {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: sticky;  /* changed: sticky instead of fixed */
+      bottom: 0;
+      background: var(--bg-light);  /* ensures background behind input */
+      padding: 10px;
       max-width: 600px;
+      width: 100%;
       display: flex;
       gap: 10px;
-      width: 90%;
-      padding: 0 1rem;
+    }
+
+    body.dark #chat-form {
+      background: var(--bg-dark);
     }
 
     #user-input {
@@ -125,6 +132,7 @@
       padding: 0.75rem 1rem;
       font-weight: bold;
       cursor: pointer;
+      transition: opacity 0.3s ease;
     }
 
     button:hover {
@@ -188,7 +196,7 @@
     // Toggle dark mode
     toggleDark.addEventListener('click', () => {
       document.body.classList.toggle('dark');
-      toggleDark.textContent = document.body.classList.contains('dark') ? '🌞' : '🌙';
+      toggleDark.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
     });
 
     // Chat functionality
@@ -200,6 +208,9 @@
       addMessage(userText, 'user');
       input.value = '';
 
+      // Add typing indicator for bot
+      addMessage('...', 'bot', true); // true flag indicates typing animation
+
       const res = await fetch('/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -207,14 +218,26 @@
       });
 
       const data = await res.json();
-      addMessage(data.reply, 'bot');
+      const botReply = data.reply;
+
+      // Replace typing indicator with the actual response after a delay
+      setTimeout(() => {
+        const lastMessage = chatBox.lastChild;
+        lastMessage.remove();  // Remove the typing indicator
+        addMessage(botReply, 'bot');  // Add the actual bot reply
+      }, 1000); // Adjust delay time (1000ms = 1 second)
     });
 
     // Add message to chat
-    function addMessage(text, role) {
+    function addMessage(text, role, isTyping = false) {
       const bubble = document.createElement('div');
       bubble.classList.add('bubble', role);
       bubble.textContent = text;
+
+      if (isTyping) {
+        bubble.textContent = '...'; // Set text for typing animation
+      }
+
       chatBox.appendChild(bubble);
       chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the latest message
     }
