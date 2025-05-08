@@ -34,7 +34,6 @@
       color: var(--text-dark);
     }
 
-    /* Centered Title */
     h1 {
       font-size: 2rem;
       font-weight: 600;
@@ -47,7 +46,6 @@
       color: var(--text-dark);
     }
 
-    /* Chat Box */
     #chat-box {
       flex: 1;
       max-width: 600px;
@@ -58,7 +56,7 @@
       border-radius: 12px;
       padding: 1rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      padding-bottom: 100px; /* new: leave space for input box */
+      padding-bottom: 100px;
       display: flex;
       flex-direction: column;
     }
@@ -67,7 +65,6 @@
       background-color: #1f1f1f;
     }
 
-    /* Chat bubbles */
     .bubble {
       margin: 0.5rem 0;
       padding: 0.75rem 1rem;
@@ -102,9 +99,9 @@
     }
 
     #chat-form {
-      position: sticky;  /* changed: sticky instead of fixed */
+      position: sticky;
       bottom: 0;
-      background: var(--bg-light);  /* ensures background behind input */
+      background: var(--bg-light);
       padding: 10px;
       max-width: 600px;
       width: 100%;
@@ -144,7 +141,6 @@
       border-radius: 12px;
     }
 
-    /* Cool Toggle Button */
     .toggle-dark {
       position: fixed;
       top: 20px;
@@ -171,13 +167,77 @@
       background: #1f1f1f;
       color: white;
     }
+
+    /* 🔥 FEATURE PANEL - LEFT SIDE */
+    #feature-tiles {
+      position: fixed;
+      top: 100px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 1000;
+      max-width: 220px;
+    }
+
+    .feature-tile {
+      background: linear-gradient(to right, #fc5c7d, #6a82fb);
+      color: white;
+      padding: 1rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      text-decoration: none;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
+    }
+
+    .feature-tile:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+    }
+
+    .feature-tile .icon {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-tile .title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .feature-tile .desc {
+      font-size: 0.9rem;
+      line-height: 1.3;
+      opacity: 0.9;
+    }
+
+    body.dark .feature-tile {
+      background: linear-gradient(135deg, #0047ab, #006dcb);
+    }
   </style>
 </head>
 <body>
-  <!-- Dark Mode Toggle -->
+  <!-- 🌙 Dark Mode Toggle -->
   <div class="toggle-dark" id="toggle-dark">🌙</div>
 
-  <!-- Centered Title -->
+  <!-- 💎 FEATURE TILES -->
+  <div id="feature-tiles">
+    <a href="/nearby" class="feature-tile">
+      <div class="icon">📍</div>
+      <div class="title">Nearby</div>
+      <div class="desc">Find nearby events, services, and student hubs around your campus.</div>
+    </a>
+
+    <a href="/reminders" class="feature-tile">
+      <div class="icon">⏰</div>
+      <div class="title">Reminders</div>
+      <div class="desc">Set personal academic or task reminders to keep yourself on track.</div>
+    </a>
+  </div>
+
+  <!-- 🚀 App Title -->
   <h1>CollegeMate-ai 🤖</h1>
 
   <div id="chat-box"></div>
@@ -209,7 +269,7 @@
       input.value = '';
 
       // Add typing indicator for bot
-      addMessage('...', 'bot', true); // true flag indicates typing animation
+      addMessage('...', 'bot', true);
 
       const res = await fetch('/chat', {
         method: 'POST',
@@ -220,26 +280,24 @@
       const data = await res.json();
       const botReply = data.reply;
 
-      // Replace typing indicator with the actual response after a delay
       setTimeout(() => {
         const lastMessage = chatBox.lastChild;
-        lastMessage.remove();  // Remove the typing indicator
-        addMessage(botReply, 'bot');  // Add the actual bot reply
-      }, 1000); // Adjust delay time (1000ms = 1 second)
+        lastMessage.remove();
+        addMessage(botReply, 'bot');
+      }, 1000);
     });
 
-    // Add message to chat
     function addMessage(text, role, isTyping = false) {
       const bubble = document.createElement('div');
       bubble.classList.add('bubble', role);
       bubble.textContent = text;
 
       if (isTyping) {
-        bubble.textContent = '...'; // Set text for typing animation
+        bubble.textContent = '...';
       }
 
       chatBox.appendChild(bubble);
-      chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the latest message
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>
 </body>

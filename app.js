@@ -3,12 +3,14 @@ const app = express();
 const axios = require('axios');
 require('dotenv').config();
 const placesRoute = require('./routes/places');
+const reminderRoutes = require('./routes/reminderRoutes'); // Add this line
 const port = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/places', placesRoute);
+app.use('/', reminderRoutes); // Add this line to use the reminder routes
 
 
 app.set('view engine', 'ejs');

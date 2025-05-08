@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Timely Reminders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary: #00bfff;
+      --secondary: #1a1f36;
+      --accent: #00f0ff;
+      --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      --glass-bg: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: #e0f7ff;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #ffffff;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+    }
+
+    .reminder-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .reminder-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 5px solid var(--primary);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 191, 255, 0.1);
+    }
+
+    .reminder-item.highlight {
+      border-left-color: #ffcc00;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .reminder-item h3 {
+      margin-bottom: 0.3rem;
+      color: #ffffff;
+    }
+
+    .reminder-item span {
+      font-size: 0.85rem;
+      color: #b5dfff;
+    }
+
+    .empty-message {
+      text-align: center;
+      font-style: italic;
+      color: #a0cfee;
+    }
+
+    .reminder-form input,
+    .reminder-form textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e0f7ff;
+      border-radius: 8px;
+    }
+
+    .reminder-form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .date-time {
+      display: flex;
+      gap: 10px;
+    }
+
+    .date-time input {
+      flex: 1;
+    }
+
+    .reminder-form button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .reminder-form button:hover {
+      background: #008ecc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🕑 Smart Timely Reminders</h1>
+
+    <div class="reminders-section">
+      <h2>Your Reminders</h2>
+      <% if (reminders.length === 0) { %>
+        <p class="empty-message">✨ No reminders yet. Add one below!</p>
+      <% } else { %>
+        <ul class="reminder-list">
+          <% reminders.forEach((reminder, index) => { %>
+            <li class="reminder-item" id="reminder-<%= index %>">
+              <h3><%= reminder.title %></h3>
+              <p><%= reminder.description %></p>
+              <span>📅 <%= reminder.date %> 🕒 <%= reminder.time %></span>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </div>
+
+    <div class="form-section">
+      <h2>Add a New Reminder</h2>
+      <form action="/reminders/add" method="POST" class="reminder-form">
+        <input type="text" name="title" placeholder="Title" required />
+        <textarea name="description" placeholder="Description" required></textarea>
+        <div class="date-time">
+          <input type="date" name="date" required />
+          <input type="time" name="time" required />
+        </div>
+        <button type="submit">Add Reminder</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Safe JSON injection -->
+  <script id="reminders-data" type="application/json">
+    <%= JSON.stringify(reminders) %>
+  </script>
+
+  <!-- Notification Logic -->
+  <script>
+    const reminders = JSON.parse(document.getElementById('reminders-data').textContent);
+
+    function notifyUpcomingReminders() {
+      const now = new Date();
+      reminders.forEach((reminder, index) => {
+        const reminderTime = new Date(`${reminder.date}T${reminder.time}`);
+        const diff = reminderTime - now;
+        if (diff > 0 && diff <= 5 * 60 * 1000) {
+          const item = document.getElementById(`reminder-${index}`);
+          if (item && !item.classList.contains('notified')) {
+            if (Notification.permission === 'granted') {
+              new Notification(`Reminder: ${reminder.title}`, {
+                body: reminder.description
+              });
+            }
+            item.classList.add('highlight', 'notified');
+          }
+        }
+      });
+    }
+
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then(() => notifyUpcomingReminders());
+    } else {
+      notifyUpcomingReminders();
+    }
+
+    setInterval(notifyUpcomingReminders, 60000);
+  </script>
+</body>
+</html>

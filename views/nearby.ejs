@@ -4,104 +4,30 @@
   <meta charset="UTF-8">
   <title>Nearby Places</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 1.5rem;
-    }
-
-    h1 {
-      text-align: center;
-      color: #007bff;
-      margin-bottom: 1rem;
-    }
-
-    #type-select {
-      display: block;
-      margin: 0 auto 1.5rem;
-      font-size: 1rem;
-      padding: 0.6rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 200px;
-    }
-
-    #results {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.2rem;
-      padding: 0.5rem;
-    }
-
-    .tile {
-      background: white;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
-    }
-
-    .tile:hover {
-      transform: translateY(-5px);
-    }
-
-    .tile h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1.2rem;
-      color: #333;
-    }
-
-    .tile p {
-      margin: 0.3rem 0;
-      color: #555;
-      font-size: 0.95rem;
-    }
-
-    .tile a {
-      color: #007bff;
-      text-decoration: none;
-    }
-
-    .tile a:hover {
-      text-decoration: underline;
-    }
-
-    .tile-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: #007bff;
-    }
-
-    .no-results {
-      text-align: center;
-      margin-top: 2rem;
-      color: #999;
-    }
-
-    .loading {
-      text-align: center;
-      font-size: 1.5rem;
-      color: #007bff;
-      padding: 1rem;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>📍 Nearby Places</h1>
+<body class="bg-gradient-to-br from-blue-50 to-white text-gray-800 p-6 font-sans">
+  <h1 class="text-4xl text-center text-blue-600 font-bold mb-6">📍 Discover Nearby Places</h1>
 
-  <select id="type-select">
-    <option value="food">🍽️ Food</option>
-    <option value="library">📚 Library</option>
-    <option value="atm">🏧 ATM</option>
-  </select>
+  <div class="flex flex-col items-center mb-8">
+    <select id="type-select" class="p-3 border border-gray-300 rounded-lg mb-4 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <option value="food">🍽️ Food</option>
+      <option value="library">📚 Library</option>
+      <option value="atm">🏧 ATM</option>
+      <option value="hospital">🏥 Hospital</option>
+      <option value="park">🌳 Park</option>
+    </select>
 
-  <button id="search-button">Search Nearby Places</button>
+    <div class="flex gap-2 items-center mb-4">
+      <button id="search-button" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 transition">Use My Location</button>
+      <input type="text" id="manual-lat" placeholder="Latitude" class="p-2 border rounded-md"/>
+      <input type="text" id="manual-lon" placeholder="Longitude" class="p-2 border rounded-md"/>
+      <button id="manual-search" class="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 transition">Search Manually</button>
+    </div>
+  </div>
 
-  <div id="results"></div>
-
-  <div id="loading" class="loading" style="display: none;">Loading...</div>
+  <div id="loading" class="text-center hidden text-blue-600 font-medium">🔄 Searching nearby places...</div>
+  <div id="results" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"></div>
 
   <script>
     async function fetchPlaces(lat, lon, type) {
@@ -115,31 +41,20 @@
 
     function renderPlaces(places, type) {
       const container = document.getElementById('results');
-      container.innerHTML = ''; // Clear the container first
+      container.innerHTML = '';
 
       if (!places.length) {
-        container.innerHTML = `<p class="no-results">No ${type} places found nearby.</p>`;
+        container.innerHTML = `<p class='text-center text-gray-500'>No ${type} places found nearby.</p>`;
         return;
       }
 
-      const icons = {
-        food: '🍽️',
-        library: '📚',
-        atm: '🏧'
-      };
-
       places.forEach(place => {
-        const mapsLink = `https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lon}#map=18/${place.lat}/${place.lon}`;
-        const addressHTML = place.address && place.address !== 'Location not specified'
-          ? place.address
-          : `<a href="${mapsLink}" target="_blank" rel="noopener">📍 View on map</a>`;
-
         const tile = document.createElement('div');
-        tile.className = 'tile';
+        tile.className = 'bg-white p-5 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2';
         tile.innerHTML = `
-          <div class="tile-icon">${icons[type] || '📍'}</div>
-          <h3>${place.name}</h3>
-          <p>${addressHTML}</p>
+          <h3 class='text-xl font-bold mb-2 text-blue-600'>${place.name}</h3>
+          <p class='text-gray-600 mb-2'>${place.address}</p>
+          <p><a href="${place.osm_link}" class="text-blue-500 underline" target="_blank">📍 View on Map</a></p>
         `;
         container.appendChild(tile);
       });
@@ -147,23 +62,38 @@
 
     function getLocationAndSearch() {
       const type = document.getElementById('type-select').value;
-      document.getElementById('loading').style.display = 'block';  // Show loading
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('results').innerHTML = '';
 
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
         const { places = [] } = await fetchPlaces(lat, lon, type);
         renderPlaces(places, type);
-
-        document.getElementById('loading').style.display = 'none';  // Hide loading
+        document.getElementById('loading').classList.add('hidden');
       }, () => {
-        alert("Please allow location access to see nearby places.");
-        document.getElementById('loading').style.display = 'none';  // Hide loading
+        alert("Could not fetch your location. Try manual search.");
+        document.getElementById('loading').classList.add('hidden');
       });
     }
 
     document.getElementById('search-button').addEventListener('click', getLocationAndSearch);
-    document.getElementById('type-select').addEventListener('change', getLocationAndSearch);
+
+    document.getElementById('manual-search').addEventListener('click', async () => {
+      const lat = document.getElementById('manual-lat').value;
+      const lon = document.getElementById('manual-lon').value;
+      const type = document.getElementById('type-select').value;
+
+      if (!lat || !lon) {
+        alert("Please enter both latitude and longitude.");
+        return;
+      }
+
+      document.getElementById('loading').classList.remove('hidden');
+      const { places = [] } = await fetchPlaces(lat, lon, type);
+      renderPlaces(places, type);
+      document.getElementById('loading').classList.add('hidden');
+    });
   </script>
 </body>
 </html>
