@@ -70,4 +70,3 @@ app.get('/nearby', (req, res) => {
     res.render('nearby');
   });
   
-a
