@@ -54,7 +54,7 @@ app.post('/chat', async (req, res) => {
     }
 });
 
-// Optional: clear memory (for testing)
+// (for testing)
 app.post('/reset', (req, res) => {
     chatHistory = [
         { role: 'system', content: 'You are CollegeMate-ai, a helpful AI that assists with college-related queries, coding, and advice.' }
@@ -70,3 +70,4 @@ app.get('/nearby', (req, res) => {
     res.render('nearby');
   });
   
+a
