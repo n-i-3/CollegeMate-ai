@@ -2,7 +2,6 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-// Map of place types to Overpass tags (you can add more types here!)
 const placeTags = {
   food: ['amenity', 'restaurant'],
   library: ['amenity', 'library'],
@@ -11,7 +10,6 @@ const placeTags = {
   park: ['leisure', 'park']
 };
 
-// Helper to fetch Overpass data with basic retry on rate limiting (429)
 const fetchOverpassData = async (query) => {
   try {
     return await axios.post('https://overpass-api.de/api/interpreter', query, {

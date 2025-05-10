@@ -3,14 +3,14 @@ const app = express();
 const axios = require('axios');
 require('dotenv').config();
 const placesRoute = require('./routes/places');
-const reminderRoutes = require('./routes/reminderRoutes'); // Add this line
+const reminderRoutes = require('./routes/reminderRoutes'); 
 const port = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/places', placesRoute);
-app.use('/', reminderRoutes); // Add this line to use the reminder routes
+app.use('/', reminderRoutes); 
 
 
 app.set('view engine', 'ejs');
@@ -54,7 +54,7 @@ app.post('/chat', async (req, res) => {
     }
 });
 
-// (for testing)
+
 app.post('/reset', (req, res) => {
     chatHistory = [
         { role: 'system', content: 'You are CollegeMate-ai, a helpful AI that assists with college-related queries, coding, and advice.' }

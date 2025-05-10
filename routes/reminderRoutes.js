@@ -4,12 +4,10 @@ const router = express.Router();
 // In-memory reminder list
 const reminders = [];
 
-// GET /reminders
 router.get('/reminders', (req, res) => {
   res.render('reminders', { reminders });
 });
 
-// POST /reminders/add
 router.post('/reminders/add', (req, res) => {
   const { title, description, date, time } = req.body;
 
