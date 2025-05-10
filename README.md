@@ -18,8 +18,8 @@
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/n-i-3/collegemate-ai.git
-    cd collegemate-ai
+    https://github.com/n-i-3/HackIndia-Spark-8-2025-Team-Wizards-CollegeMate-ai.git
+    cd HackIndia-Spark-8-2025-Team-Wizards-CollegeMate-ai.git
     ```
 
 2. **Install dependencies:**
