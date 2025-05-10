@@ -8,6 +8,8 @@
 
 **Collegemate AI** is a smart assistant designed to simplify college life. Whether it's keeping track of important tasks or finding useful places around campus, Collegemate AI has you covered.
 
+🎯 **[👉 Live Demo Here](https://hackindia-spark-8-2025-team-wizards.onrender.com)**
+
 ## ✨ Features
 
 - ⏰ **Smart Reminder:** Set and manage reminders for your classes, deadlines, and personal tasks effortlessly.
@@ -18,14 +20,14 @@
 1. **Clone the repository:**
 
     ```bash
-    https://github.com/n-i-3/HackIndia-Spark-8-2025-Team-Wizards-CollegeMate-ai.git
-    cd HackIndia-Spark-8-2025-Team-Wizards-CollegeMate-ai.git
+    git clone https://github.com/your-username/collegemate-ai.git
+    cd collegemate-ai
     ```
 
 2. **Install dependencies:**
 
     ```bash
-    npm install ...
+    npm install
     ```
 
 3. **Configure environment variables:**
@@ -39,7 +41,7 @@
 4. **Run the app:**
 
     ```bash
-    node app.js
+    npm start
     ```
 
 5. **Access the app:**
