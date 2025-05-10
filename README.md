@@ -13,25 +13,19 @@
 - ⏰ **Smart Reminder:** Set and manage reminders for your classes, deadlines, and personal tasks effortlessly.
 - 📍 **Nearby Places Finder:** Quickly discover nearby cafes, libraries, stationery shops, and other essential spots around your campus.
 
-## 🛠️ Tech Stack
-
-- **Frontend:** HTML, Tailwind CSS, JavaScript
-- **Backend:** Node.js, Express
-- **AI Integration:** Mistral AI API
-
 ## 📦 Installation
 
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/collegemate-ai.git
+    git clone https://github.com/n-i-3/collegemate-ai.git
     cd collegemate-ai
     ```
 
 2. **Install dependencies:**
 
     ```bash
-    npm install
+    npm install ...
     ```
 
 3. **Configure environment variables:**
